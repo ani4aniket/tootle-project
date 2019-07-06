@@ -31,7 +31,7 @@
       <div class="card-body">
         <div id="table" class="table-editable">
           <span class="table-add float-right mb-3 mr-2"
-            ><a href="/add" class="text-success"
+            ><a href="/addTodo" class="text-success"
               ><i class="fas fa-plus fa-2x" aria-hidden="true"></i></a
           ></span>
           <span class="table-add float-left mb-3 mr-2 "
@@ -49,6 +49,37 @@
               <th class="text-center">Edit</th>
               <th class="text-center">Remove</th>
             </tr>
+            <% todos.forEach((todo) => { %>
+            <tr>
+              <td class="pt-3-half" contenteditable="false">
+                <%= todo.title %>
+              </td>
+              <td class="pt-3-half" contenteditable="false">
+                <%= todo.description %>
+              </td>
+              <td class="pt-3-half" contenteditable="false">
+                <%= todo.date %>
+              </td>
+              <td class="pt-3-half">
+                <span class="table-up"
+                  ><a href="/updateTodo/<%=todo._id%>" class="indigo-text"
+                    ><i class="far fa-edit" aria-hidden="true"></i></a
+                ></span>
+              </td>
+              <td>
+                <span class="table-remove"
+                  ><a href="/deleteTodo/<%=todo._id%>"
+                    ><button
+                      type="button"
+                      class="btn btn-danger btn-rounded btn-sm my-0"
+                    >
+                      Remove
+                    </button></a
+                  ></span
+                >
+              </td>
+            </tr>
+            <% }) %>
           </table>
         </div>
       </div>

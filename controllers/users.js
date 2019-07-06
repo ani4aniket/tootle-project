@@ -1,6 +1,7 @@
 "use strict";
 
 module.exports = function(_, passport, User) {
+  const Todo = require("../models/todo");
   return {
     SetRouting: function(router) {
       router.get("/", this.indexPage);
@@ -8,9 +9,14 @@ module.exports = function(_, passport, User) {
       router.get("/signup", this.isNotLoggedIn, this.getSignUp);
       router.get("/home", this.isLoggedIn, this.homePage);
       router.get("/logout", this.logout);
+      router.get("/addTodo", this.isLoggedIn, this.addTodoPage);
+      router.get("/updateTodo/:id", this.isLoggedIn, this.updateTodoPage);
+      router.get("/deleteTodo/:id", this.isLoggedIn, this.deleteTodo);
 
       router.post("/signin", User.LoginValidation, this.postLogin);
       router.post("/signup", User.SignUpValidation, this.postSignUp);
+      router.post("/addTodo", this.isLoggedIn, this.addNewTodo);
+      router.post("/updateTodo/:id", this.isLoggedIn, this.updateTodoLogic);
     },
 
     indexPage: function(req, res) {
@@ -48,7 +54,9 @@ module.exports = function(_, passport, User) {
     }),
 
     homePage: function(req, res) {
-      return res.render("home");
+      Todo.find({}, (err, todos) => {
+        res.render("home", { todos });
+      });
     },
 
     logout: function(req, res) {
@@ -68,6 +76,59 @@ module.exports = function(_, passport, User) {
         return res.redirect("/home");
       }
       return next();
+    },
+    addTodoPage: function(req, res) {
+      return res.render("addTodo");
+    },
+    addNewTodo: function(req, res) {
+      var todo = new Todo({
+        title: req.body.title,
+        description: req.body.description
+      });
+
+      todo.save().then(
+        doc => {
+          res.redirect("/home");
+        },
+        e => {
+          res.status(400).send(e);
+        }
+      );
+    },
+    updateTodoPage: function(req, res) {
+      var id = req.params.id;
+      Todo.findOne({ _id: id }, (err, todo) => {
+        res.render("updateTodo", { todo });
+      });
+    },
+
+    updateTodoLogic: function(req, res) {
+      var id = req.params.id;
+      Todo.findOne({
+        _id: id
+      }).then(todo => {
+        todo.title = req.body.title;
+        todo.description = req.body.description;
+
+        todo.save();
+        res.redirect("/home");
+      });
+    },
+
+    deleteTodo: function(req, res) {
+      var id = req.params.id;
+      Todo.findOneAndRemove({
+        _id: id
+      })
+        .then(todo => {
+          if (!todo) {
+            return res.status(404).send();
+          }
+          res.redirect("/home");
+        })
+        .catch(e => {
+          res.status(400).send();
+        });
     }
   };
 };

@@ -12,7 +12,7 @@ const passport = require("passport");
 
 const container = require("./container");
 
-container.resolve(function(users, _) {
+container.resolve(function(users, _, home) {
   mongoose.Promise = global.Promise;
   mongoose.connect("mongodb://localhost:27017/tootleProject", {
     useNewUrlParser: true
@@ -33,7 +33,7 @@ container.resolve(function(users, _) {
     //Setup router
     const router = require("express-promise-router")();
     users.SetRouting(router);
-    // home.SetRouting(router);
+    home.SetRouting(router);
 
     app.use(router);
   }
