@@ -12,7 +12,7 @@ const passport = require("passport");
 
 const container = require("./container");
 
-container.resolve(function(users, _, home) {
+container.resolve(function(users, _) {
   mongoose.Promise = global.Promise;
   mongoose.connect("mongodb://localhost:27017/tootleProject", {
     useNewUrlParser: true
